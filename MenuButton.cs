@@ -53,8 +53,20 @@ namespace PlanetParade
             this.clickState = clickState;
             Initialize(center);
         }
+               
 
-        #endregion
+		#endregion
+
+  //      #region Properties
+  //      /// <summary>
+  //      /// Gets drawrectanle of the button удалить потом
+  //      /// </summary>
+		//public Rectangle ButtonRectangle
+  //      {
+		//	get { return drawRectangle; }
+  //      }
+
+		//#endregion
 
         #region Public methods
 
@@ -65,16 +77,34 @@ namespace PlanetParade
         public void Update(TouchCollection touches)
         {
             this.touches = touches;
-            if (touches.Count == 1 && !isPressed && drawRectangle.Contains(touches[0].Position))
+            //if (touches.Count == 1 && !isPressed && drawRectangle.Contains(touches[0].Position))
+            //{
+            //    isPressed = true;
+            //    touchStarted = true;
+            //}
+            //else if (touches.Count == 0)
+            //{
+            //    isPressed = false;
+            //}
+            //if (touchStarted)
+            //{
+            //    Game1.ChangeState(clickState);
+            //    touchStarted = false;
+            //}
+			if (touches.Count == 1 && !isPressed && drawRectangle.Contains(touches[0].Position))
             {
                 isPressed = true;
                 touchStarted = true;
             }
-            else if (touches.Count == 0)
+			if (touches.Count == 1 && touchStarted && !drawRectangle.Contains(touches[0].Position))
+			{
+				touchStarted = false;
+			}
+            if (touches.Count == 0)
             {
                 isPressed = false;
             }
-            if (touchStarted)
+			if (touchStarted && touches.Count == 0)
             {
                 Game1.ChangeState(clickState);
                 touchStarted = false;

@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDisplayName</key>
-	<string>PlanetParade.iOS</string>
+	<string>Planet Parade</string>
 	<key>CFBundleIdentifier</key>
 	<string>project.MonoGame.PlanetParade.iOS</string>
 	<key>MinimumOSVersion</key>

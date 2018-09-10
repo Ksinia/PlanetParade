@@ -22,12 +22,13 @@ namespace PlanetParade
         List<Planet> resultSequence = new List<Planet>();
         List<Planet> secretPlanetSequence = new List<Planet>();
         Planet[,] userPlanetSequence = new Planet[9, 4];
+		List<Planet> currentAttemptUserPlanetSequence = new List<Planet>();
         List<PlanetType> planetTypeList = new List<PlanetType>();
         List<MenuButton> gameButtons = new List<MenuButton>();
         List<Planet> winSuns = new List<Planet>();
         MenuButton checkButton;
 		MenuButton yesButton;
-		MenuButton returnButton;
+		List<Star> stars = new List<Star>();
 
         // planet, button, place sprites
         static Texture2D earthSprite;
@@ -45,7 +46,8 @@ namespace PlanetParade
         Texture2D yesButtonSprite;
         Texture2D giveUpButtonSprite;
 		Texture2D rulesButtonSprite;
-		//Texture2D optionsButtonSprite;
+		Texture2D optionsButtonSprite;
+		Texture2D starSprite;
 
         TouchCollection touches;
         bool isPressed = false;
@@ -72,7 +74,7 @@ namespace PlanetParade
         int horizontalShowingResultsOffset;
         int verticalPlanetNamesOffset;
 		int horizontalRulesButtonOffset;
-		//int horizontalOptionsButtonOffset;
+		int horizontalOptionsButtonOffset;
         int horizontalGiveUpButtonOffset;
         int verticalMenuButtonsOffset;
         int verticalShowingResultsOffset;
@@ -125,7 +127,7 @@ namespace PlanetParade
             horizontalShowingResultsOffset = currentWidth * 16 / 27;
             verticalPlanetNamesOffset = currentHeight / 16;
             horizontalRulesButtonOffset = currentWidth * 1 / 6;
-			//horizontalOptionsButtonOffset = currentWidth * 3 / 6;
+			horizontalOptionsButtonOffset = currentWidth * 3 / 6;
 			horizontalGiveUpButtonOffset = currentWidth * 5 / 6;
             verticalMenuButtonsOffset = currentHeight / 20;
             verticalShowingResultsOffset = currentHeight / 5;
@@ -170,7 +172,10 @@ namespace PlanetParade
             yesButtonSprite = Content.Load<Texture2D>(@"graphics\yesbutton1");
             giveUpButtonSprite = Content.Load<Texture2D>(@"graphics\giveupbutton1");
 			rulesButtonSprite = Content.Load<Texture2D>(@"graphics\rulesbutton1");
-			//optionsButtonSprite = Content.Load<Texture2D>(@"graphics\optionsbutton");
+			optionsButtonSprite = Content.Load<Texture2D>(@"graphics\optionsbutton");
+
+            //loading star sprite
+			starSprite = Content.Load<Texture2D>(@"graphics\star9x9");
 			// load sprite font
             messageFont = Content.Load<SpriteFont>(@"fonts\Arial");
             
@@ -222,10 +227,10 @@ namespace PlanetParade
                 horizontalRulesButtonOffset,
                 verticalMenuButtonsOffset),
                 GameState.ShowingRules));
-			//gameButtons.Add(new MenuButton(optionsButtonSprite, new Vector2(
-            //    horizontalOptionsButtonOffset,
-            //    verticalMenuButtonsOffset),
-            //    GameState.ShowingOptions));
+			gameButtons.Add(new MenuButton(optionsButtonSprite, new Vector2(
+                horizontalOptionsButtonOffset,
+                verticalMenuButtonsOffset),
+                GameState.ShowingOptions));
             checkButton = new MenuButton(checkButtonSprite,
                new Vector2(horizontalInitialPlanetsLeftOffset +
                     4 * horizontalInitialPlanetsOffset,
@@ -236,9 +241,7 @@ namespace PlanetParade
                     horizontalPlanetsOffset * 3 / 2,
                     verticalShowingResultsOffset + 4 * verticalAttemptOffset),
                     GameState.StartingNewGame);
-			returnButton = new MenuButton(rulesButtonSprite, new Vector2(
-                horizontalRulesButtonOffset,
-                verticalMenuButtonsOffset),GameState.StartingNewGame);
+			
 			//loading rules
 			rules = new GameMessage("The world lies in darkness. To make it shine " +
 			                        "bright you must crack the secret sequence of " +
@@ -287,6 +290,13 @@ namespace PlanetParade
                         horizontalPlanetsOffset * i,
                         verticalShowingResultsOffset + 2 * verticalAttemptOffset)));
             }
+
+			//loading stars
+			for (int i = 0; i < 70; i++)
+			{
+				stars.Add(new Star(starSprite, currentWidth, currentHeight));
+
+			}
         }
 
         /// <summary>
@@ -306,10 +316,15 @@ namespace PlanetParade
 
 			touches = TouchPanel.GetState();
 
+            //update stars
+			foreach (Star star in stars)
+			{
+				star.Update(gameTime, currentWidth, currentHeight);
+			}
             // state-specific processing
 
 			// update buttons
-            if (currentState != GameState.ShowingRules)
+			if (currentState != GameState.ShowingRules && currentState != GameState.ShowingOptions)
             {
                 foreach (MenuButton button in gameButtons)
                 {
@@ -321,10 +336,27 @@ namespace PlanetParade
             {
                 yesButton.Update(touches);
             }
-			if (currentState == GameState.ShowingRules)
+
+			if (currentState == GameState.ShowingRules || currentState == GameState.ShowingOptions)
 			{
-				returnButton.Update(touches);
-			}
+				if (touches.Count == 1 && !isPressed)
+
+                {
+                    isPressed = true;
+                    touchStarted = true;
+                }
+                if (touches.Count == 0)
+                {
+                    isPressed = false;
+                }
+				if (touchStarted && isPressed == false)
+                {
+                    currentState = GameState.StartingNewGame;
+                    touchStarted = false;
+                }
+            }
+
+            
             if (currentState == GameState.StartingNewGame)
             {
                 // deleting previous game data
@@ -411,11 +443,11 @@ namespace PlanetParade
                         isPressed = true;
                         touchStarted = true;
                     }
-                    else if (touches.Count == 0)
+                    if (touches.Count == 0)
                     {
                         isPressed = false;
                     }
-                    if (touchStarted)
+					if (touchStarted)
                     {
                         userPlanetSequence[currentAttempt, i] = null;
                         touchStarted = false;
@@ -440,6 +472,7 @@ namespace PlanetParade
             if (currentState == GameState.UpdatingCheckButton)
             {
                 checkButton.Update(touches);
+                // deleting user planets on touch
                 for (int i = 3; i >= 0; i--)
                 {
                     if (userPlanetSequence[currentAttempt, i] != null &&
@@ -453,7 +486,7 @@ namespace PlanetParade
                     {
                         isPressed = false;
                     }
-                    if (touchStarted)
+					if (touchStarted)
                     {
                         userPlanetSequence[currentAttempt, i] = null;
                         currentState = GameState.AddingUserPlanets;
@@ -558,13 +591,17 @@ namespace PlanetParade
 			GraphicsDevice.Clear(GetBackGroundColor(brightness));
 
             spriteBatch.Begin();
+			// draw stars
+            foreach (Star star in stars)
+            { star.Draw(spriteBatch); }
+
             // draw initial initialPlanets
             if (currentState == GameState.ShowingResults)
             {
                 foreach (Planet planet in initialPlanets)
                 { planet.Draw(spriteBatch, Color.Gray, true); }
             }
-			else if (currentState != GameState.ShowingRules)
+			else if (currentState != GameState.ShowingRules && currentState != GameState.ShowingOptions)
             {
                 foreach (Planet planet in initialPlanets)
                 { planet.Draw(spriteBatch, Color.White, true); }
@@ -577,7 +614,7 @@ namespace PlanetParade
             
 
             
-			if (currentState !=GameState.ShowingRules)
+			if (currentState != GameState.ShowingRules && currentState != GameState.ShowingOptions)
 			{
 				// draw menu buttons
                 foreach (MenuButton button in gameButtons)
@@ -628,7 +665,7 @@ namespace PlanetParade
                 { planet.Draw(spriteBatch, Color.White, false); }
 				winMessage.Draw(spriteBatch);
 			}
-			else if (currentState != GameState.ShowingRules)
+			else if (currentState != GameState.ShowingRules && currentState != GameState.ShowingOptions)
             {
                 foreach (Planet planet in userPlanetSequence)
                 {
@@ -641,7 +678,7 @@ namespace PlanetParade
             
 
             // draw checking
-			if (currentState != GameState.ShowingRules)
+			if (currentState != GameState.ShowingRules && currentState != GameState.ShowingOptions)
 			{
 				foreach (Planet planet in resultSequence)
                 { planet.Draw(spriteBatch, Color.White, false); }
@@ -663,8 +700,9 @@ namespace PlanetParade
 			if (currentState == GameState.ShowingRules)
 			{
 				rules.DrawMultiline(spriteBatch, currentWidth * 6 / 8);
-				returnButton.Draw(spriteBatch);
-            }	
+            }
+
+
 
             spriteBatch.End();
 
@@ -727,9 +765,9 @@ namespace PlanetParade
         /// <returns>the color of background</returns>
         public Color GetBackGroundColor(int brightness)
         {
-            return new Color(3 + brightness * (50 - 3) / 100,
-                3 + brightness * (60 - 3) / 100,
-                50 + brightness * (100 - 50) / 100);
+            return new Color(3 + brightness * (52 - 3) / 100,
+                10 + brightness * (76 - 10) / 100,
+                50 + brightness * (97 - 50) / 100);
 
         }
 
