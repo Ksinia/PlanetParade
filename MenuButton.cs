@@ -22,7 +22,6 @@ namespace PlanetParade
 
         // fields for button image
         Texture2D sprite;
-        //const int ImagesPerRow = 2;
         float buttonWidth;
         float buttonHeight;
 
@@ -30,12 +29,10 @@ namespace PlanetParade
         Rectangle drawRectangle;
         Rectangle sourceRectangle;
 
-        // click processing
-        GameState clickState;        
-        TouchCollection touches;
-        bool isPressed = false;
-        bool touchStarted = false;
-        //public bool IsEnabled;
+        // touch processing
+        GameState clickState;
+        bool screenIsTouched = false;
+        bool buttonTouchStarted = false;        
 
         #endregion
 
@@ -52,74 +49,40 @@ namespace PlanetParade
             this.sprite = sprite;
             this.clickState = clickState;
             Initialize(center);
-        }
-               
+        }              
 
 		#endregion
 
-  //      #region Properties
-  //      /// <summary>
-  //      /// Gets drawrectanle of the button удалить потом
-  //      /// </summary>
-		//public Rectangle ButtonRectangle
-  //      {
-		//	get { return drawRectangle; }
-  //      }
-
-		//#endregion
 
         #region Public methods
 
         /// <summary>
         /// Updates the button to check for a button touch
         /// </summary>
-        /// <param name="gamepad">the current mouse state</param>
+        /// <param name="touches">the current touch screen state</param>
         public void Update(TouchCollection touches)
         {
-            this.touches = touches;
-            //if (touches.Count == 1 && !isPressed && drawRectangle.Contains(touches[0].Position))
-            //{
-            //    isPressed = true;
-            //    touchStarted = true;
-            //}
-            //else if (touches.Count == 0)
-            //{
-            //    isPressed = false;
-            //}
-            //if (touchStarted)
-            //{
-            //    Game1.ChangeState(clickState);
-            //    touchStarted = false;
-            //}
-			if (touches.Count == 1 && !isPressed && drawRectangle.Contains(touches[0].Position))
+            if (touches.Count == 1 && !screenIsTouched && drawRectangle.Contains(touches[0].Position))
             {
-                isPressed = true;
-                touchStarted = true;
-            }
-			if (touches.Count == 1 && touchStarted && !drawRectangle.Contains(touches[0].Position))
+                screenIsTouched = true;
+                buttonTouchStarted = true;
+			}
+			if (touches.Count == 1 && !drawRectangle.Contains(touches[0].Position))
 			{
-				touchStarted = false;
+				buttonTouchStarted = false;
+				screenIsTouched = true;
 			}
             if (touches.Count == 0)
             {
-                isPressed = false;
+                screenIsTouched = false;
             }
-			if (touchStarted && touches.Count == 0)
+			if (buttonTouchStarted && !screenIsTouched)
             {
                 Game1.ChangeState(clickState);
-                touchStarted = false;
+                buttonTouchStarted = false;
             }
             
         }
-
-        ///// <summary>
-        ///// Resets the button
-        ///// </summary>
-        //public void Reset()
-        //{
-        //    IsPressed = false;
-        //    //IsEnabled = false;
-        //}
 
         /// <summary>
         /// Draws the button

@@ -52,7 +52,7 @@
     <MtouchDebug>true</MtouchDebug>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <CodesignKey>iPhone Developer: xiatian@mail.ru (4G5632827Z)</CodesignKey>
-    <CodesignProvision>iOS Team Provisioning Profile: project.MonoGame.PlanetParade.iOS</CodesignProvision>
+    <CodesignProvision>iOS Team Provisioning Profile: project.MonoGame.PlanetParade</CodesignProvision>
     <AssemblyName>PlanetParade</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">

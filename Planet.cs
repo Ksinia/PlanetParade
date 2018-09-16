@@ -4,8 +4,6 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-
 
 namespace PlanetParade
 {
@@ -30,6 +28,10 @@ namespace PlanetParade
         // checking support
         bool planetChecked = false;
 
+		// selecting support
+		bool planetSelected = false;
+		bool touched = false;
+        
         #endregion
 
         #region Constructors
@@ -106,6 +108,26 @@ namespace PlanetParade
             get { return planetHeight; }
             set { planetHeight = value; }
         }
+
+		/// <summary>
+		/// Gets and sets whether a planet is touched
+        /// </summary>
+		public bool PlanetTouched
+		{
+			get { return touched; }
+			set { touched = value; }
+		}
+
+		/// <summary>
+        /// Gets and sets whether a planet is selected
+        /// </summary>
+        public bool PlanetSelected
+        {
+            get { return planetSelected; }
+            set { planetSelected = value; }
+        }
+
+        
         #endregion
 
         #region Methods
@@ -141,6 +163,10 @@ namespace PlanetParade
                 (int)planetHeight);
             sourceRectangle = new Rectangle(0, 0, sprite.Width, sprite.Height);
         }
+
+       
+
+
 
         #endregion
     }

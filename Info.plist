@@ -5,7 +5,7 @@
 	<key>CFBundleDisplayName</key>
 	<string>Planet Parade</string>
 	<key>CFBundleIdentifier</key>
-	<string>project.MonoGame.PlanetParade.iOS</string>
+	<string>project.MonoGame.PlanetParade</string>
 	<key>MinimumOSVersion</key>
 	<string>7.0</string>
 	<key>UISupportedInterfaceOrientations</key>

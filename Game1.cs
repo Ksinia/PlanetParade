@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Content;
+//using Microsoft.Xna.Framework.Input;
+//using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input.Touch;
 using System;
 using System.Collections.Generic;
@@ -22,7 +22,6 @@ namespace PlanetParade
         List<Planet> resultSequence = new List<Planet>();
         List<Planet> secretPlanetSequence = new List<Planet>();
         Planet[,] userPlanetSequence = new Planet[9, 4];
-		List<Planet> currentAttemptUserPlanetSequence = new List<Planet>();
         List<PlanetType> planetTypeList = new List<PlanetType>();
         List<MenuButton> gameButtons = new List<MenuButton>();
         List<Planet> winSuns = new List<Planet>();
@@ -50,8 +49,8 @@ namespace PlanetParade
 		Texture2D starSprite;
 
         TouchCollection touches;
-        bool isPressed = false;
-        bool touchStarted = false;
+        bool isTouched = false;
+        bool buttonTouchStarted = false;
 
         // resize support
         static int currentWidth;
@@ -100,7 +99,7 @@ namespace PlanetParade
         // game state tracking
         static GameState currentState = GameState.StartingNewGame;
         int currentAttempt = 0;
-
+  
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -306,15 +305,7 @@ namespace PlanetParade
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            // For Mobile devices, this logic will close the Game when the Back button is pressed.
-            // Exit() is obsolete on iOS
-            //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
-            //    Keyboard.GetState().IsKeyDown(Keys.Escape))
-            //{
-            //    Exit();
-            //}
-
-			touches = TouchPanel.GetState();
+            touches = TouchPanel.GetState();
 
             //update stars
 			foreach (Star star in stars)
@@ -339,20 +330,20 @@ namespace PlanetParade
 
 			if (currentState == GameState.ShowingRules || currentState == GameState.ShowingOptions)
 			{
-				if (touches.Count == 1 && !isPressed)
+				if (touches.Count == 1 && !isTouched)
 
                 {
-                    isPressed = true;
-                    touchStarted = true;
+                    isTouched = true;
+                    buttonTouchStarted = true;
                 }
                 if (touches.Count == 0)
                 {
-                    isPressed = false;
+                    isTouched = false;
                 }
-				if (touchStarted && isPressed == false)
+				if (buttonTouchStarted && isTouched == false)
                 {
                     currentState = GameState.StartingNewGame;
-                    touchStarted = false;
+                    buttonTouchStarted = false;
                 }
             }
 
@@ -365,6 +356,7 @@ namespace PlanetParade
                 resultSequence.Clear();
                 currentAttempt = 0;
                 brightness = 0;
+				//allUserPlanetsList.Clear();
                 for (int i = 0; i < 4; i++)
                 {
                     for (int j = 0; j < 9; j++)
@@ -402,55 +394,95 @@ namespace PlanetParade
 
                 }
 
-                // add planet of selected type to the list on click               
-                for (int i = 0; i < initialPlanets.Count; i++)
-                {
-                    for (int j = 0; j < 4; j++)
-                    {
-                        if (touches.Count == 1 && !isPressed &&
-                            initialPlanets[i].CollisionRectangle.Contains(touches[0].Position) &&
-                                userPlanetSequence[currentAttempt, j] == null)
-                        {
-                            isPressed = true;
-                            touchStarted = true;
-                        }
-                        else if (touches.Count == 0)
-                        {
-                            isPressed = false;
-                        }
-                        if (touchStarted)
-                        {
-                            userPlanetSequence[currentAttempt, j] = new Planet(initialPlanets[i].Type,
-                                GetPlanetSprite(initialPlanets[i].Type),
-                                new Vector2(horizontalPlanetsOffset +
-                                horizontalPlanetsOffset * j,
-                                verticalFirstAttemptOffset + currentAttempt * verticalAttemptOffset));
-                            touchStarted = false;
-                        }
-
-
+				// add planet of selected type to the list on click
+				foreach (Planet planet in initialPlanets)
+				{
+					if (touches.Count == 1 && !planet.PlanetTouched && planet.CollisionRectangle.Contains(touches[0].Position))
+					{
+						planet.PlanetSelected = true;
+						planet.PlanetTouched = true;
                     }
-                }
+					else if (touches.Count == 1 && !planet.CollisionRectangle.Contains(touches[0].Position))
+                    {
+                        planet.PlanetSelected = false;
+						planet.PlanetTouched = true;
+                    }
+					else if (touches.Count == 0)
+                    {
+						planet.PlanetTouched = false;
+                    }
+					if (planet.PlanetSelected && !planet.PlanetTouched)
+					{
+						for (int j = 0; j < 4; j ++)
+						{
+							if (userPlanetSequence[currentAttempt,j] == null)
+							{
+								userPlanetSequence[currentAttempt, j] = new Planet(
+                            planet.Type,
+                            GetPlanetSprite(planet.Type),
+                            new Vector2(horizontalPlanetsOffset + horizontalPlanetsOffset * j,
+                            verticalFirstAttemptOffset + currentAttempt * verticalAttemptOffset)
+                        );
+                                planet.PlanetSelected = false;
+								break;
+							}
+						}
 
-                // deleting user planets on right-click
+
+                      
+					}
+				}
+    
+				//// deleting user planets on touch
+                //foreach (Planet planet in initialPlanets)
+                //{
+                //    if (touches.Count == 1 && !planet.PlanetTouched && planet.CollisionRectangle.Contains(touches[0].Position))
+                //    {
+                //        planet.PlanetSelected = true;
+                //        planet.PlanetTouched = true;
+                //    }
+                //    else if (touches.Count == 1 && !planet.CollisionRectangle.Contains(touches[0].Position))
+                //    {
+                //        planet.PlanetSelected = false;
+                //        planet.PlanetTouched = true;
+                //    }
+                //    else if (touches.Count == 0)
+                //    {
+                //        planet.PlanetTouched = false;
+                //    }
+                //    if (planet.PlanetSelected && !planet.PlanetTouched)
+                //    {
+                //        userPlanetSequence[currentAttempt, j] = new Planet(
+                //            planet.Type,
+                //            GetPlanetSprite(planet.Type),
+                //            new Vector2(horizontalPlanetsOffset + horizontalPlanetsOffset * j,
+                //            verticalFirstAttemptOffset + currentAttempt * verticalAttemptOffset)
+                //        );
+                //        planet.PlanetSelected = false;
+                //        j += 1;
+                      
+                //    }
+                //}
+    
+                // deleting user planets on touch
 
                 for (int i = 3; i >= 0; i--)
                 {
                     if (userPlanetSequence[currentAttempt, i] != null &&
-                        touches.Count == 1 && !isPressed &&
+                        touches.Count == 1 && !isTouched &&
                         userPlanetSequence[currentAttempt, i].CollisionRectangle.Contains(touches[0].Position))
                     {
-                        isPressed = true;
-                        touchStarted = true;
+                        isTouched = true;
+                        buttonTouchStarted = true;
                     }
                     if (touches.Count == 0)
                     {
-                        isPressed = false;
+                        isTouched = false;
                     }
-					if (touchStarted)
+					if (buttonTouchStarted)
                     {
                         userPlanetSequence[currentAttempt, i] = null;
-                        touchStarted = false;
+						buttonTouchStarted = false;
                     }
 
                 }
@@ -460,9 +492,10 @@ namespace PlanetParade
                         userPlanetSequence[currentAttempt, 2] != null &&
                         userPlanetSequence[currentAttempt, 3] != null)
                 {
-                    currentState = GameState.UpdatingCheckButton;
+                    currentState = GameState.UpdatingCheckButton;				
                 }
-                // unchecking all secret planets
+                
+				// unchecking all secret planets
                 foreach (Planet planet in secretPlanetSequence)
                 {
                     planet.PlanetChecked = false;
@@ -476,28 +509,27 @@ namespace PlanetParade
                 for (int i = 3; i >= 0; i--)
                 {
                     if (userPlanetSequence[currentAttempt, i] != null &&
-                        touches.Count == 1 && !isPressed &&
+                        touches.Count == 1 && !isTouched &&
                         userPlanetSequence[currentAttempt, i].CollisionRectangle.Contains(touches[0].Position))
                     {
-                        isPressed = true;
-                        touchStarted = true;
+                        isTouched = true;
+                        buttonTouchStarted = true;
                     }
                     else if (touches.Count == 0)
                     {
-                        isPressed = false;
+                        isTouched = false;
                     }
-					if (touchStarted)
+					if (buttonTouchStarted)
                     {
                         userPlanetSequence[currentAttempt, i] = null;
                         currentState = GameState.AddingUserPlanets;
-                        touchStarted = false;
+                        buttonTouchStarted = false;
                     }
                 }
             }
 
             if (currentState == GameState.CheckingUserPlanets)
-            {
-                // 
+            {                
                 brightness = 0;
                 // checking suns
                 offset = 0;
@@ -555,27 +587,12 @@ namespace PlanetParade
             if (currentState == GameState.ShowingResults)
             {
                 resultSequence.Clear();
-
-                
-                
-                
-                if (brightness == 100)
-                {
-                    
-                    
-                }
-                // user loosing
-                else
-                {
-                    brightness = 0;
-                   
-                }
-              }
-
-
-            
-			
-         
+				if (brightness != 100)
+				{
+					brightness = 0;
+				} 
+            }
+             
 
             base.Update(gameTime);
         }
