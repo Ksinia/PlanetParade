@@ -118,25 +118,6 @@
     <None Include="Entitlements.plist" />
     <None Include="Info.plist" />
     <MonoGameContentReference Include="Content\Content.mgcb" />
-    <None Include="Content\graphics\checkbutton2.xnb" />
-    <None Include="Content\graphics\earth200.xnb" />
-    <None Include="Content\graphics\giveupbutton1.xnb" />
-    <None Include="Content\graphics\jupiter200.xnb" />
-    <None Include="Content\graphics\mars200.xnb" />
-    <None Include="Content\graphics\mercury200.xnb" />
-    <None Include="Content\graphics\moon200.xnb" />
-    <None Include="Content\graphics\neptun200.xnb" />
-    <None Include="Content\graphics\pluto200.xnb" />
-    <None Include="Content\graphics\saturn200plus.xnb" />
-    <None Include="Content\graphics\uranus205.xnb" />
-    <None Include="Content\graphics\venus200.xnb" />
-    <None Include="Content\graphics\yesbutton1.xnb" />
-    <None Include="Content\graphics\sun200plus1.xnb" />
-    <None Include="Content\graphics\optionsbutton.xnb" />
-    <None Include="Content\graphics\rulesbutton1.xnb" />
-    <None Include="Content\fonts\Arial.xnb" />
-    <None Include="Content\graphics\star.xnb" />
-    <None Include="Content\graphics\star9x9.xnb" />
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json" />
@@ -163,9 +144,6 @@
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Icon76.png" />
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Icon152.png" />
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Icon167.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Content\fonts\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
