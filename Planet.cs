@@ -31,7 +31,12 @@ namespace PlanetParade
 		// selecting support
 		bool planetSelected = false;
 		bool touched = false;
-        
+
+        //options support       
+        List<PlanetType> usedPlanets = new List<PlanetType>();
+
+
+
         #endregion
 
         #region Constructors
@@ -53,14 +58,14 @@ namespace PlanetParade
         /// <summary>
         /// Constructor of a random planet
         /// </summary>
-        public Planet(Random rand, Vector2 location)
+        public Planet(Random rand, Vector2 location, List<PlanetType>usedPlanets)
         {
             this.location = location;
-            int planetType = rand.Next(0, 9);
             List<PlanetType>planetTypeList = Enum.GetValues(typeof(PlanetType)).Cast<PlanetType>().ToList();
+            planetTypeList = planetTypeList.Except(usedPlanets).ToList();
+            int planetType = rand.Next(0, planetTypeList.Count);
             type = planetTypeList[planetType];
-            sprite = Game1.GetPlanetSprite(type);
-           
+            sprite = Game1.GetPlanetSprite(type);           
         }
 
         #endregion

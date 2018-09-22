@@ -22,6 +22,8 @@ namespace PlanetParade
 
         // fields for button image
         Texture2D sprite;
+		Texture2D spriteYes;
+		Texture2D spriteNo;
         float buttonWidth;
         float buttonHeight;
 
@@ -32,26 +34,63 @@ namespace PlanetParade
         // touch processing
         GameState clickState;
         bool screenIsTouched = false;
-        bool buttonTouchStarted = false;        
+        bool buttonTouchStarted = false;
+        
+		// whether button is option button
+		bool isOptionButton;
+
+        // type of option
+        OptionsList typeOfOption;
+		// option value
+        bool option = true;
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Constructor
+        /// Constructor of menu button
         /// </summary>
         /// <param name="sprite">the sprite for the button</param>
         /// <param name="center">the center of the button</param>
         /// <param name="clickState">the game state to change to when the button is clicked</param>
         public MenuButton(Texture2D sprite, Vector2 center, GameState clickState)
         {
-            this.sprite = sprite;
+			isOptionButton = false;
+			this.sprite = sprite;
             this.clickState = clickState;
             Initialize(center);
-        }              
 
-		#endregion
+        }    
+		/// <summary>
+        /// Constructor of option button
+        /// </summary>
+        /// <param name="spriteYes">the sprite for the button, when option is set to yes</param>
+		/// <param name="spriteNo">the sprite for the button, when option is set to no</param>
+        /// <param name="center">the center of the button</param>        
+		public MenuButton(Texture2D spriteYes, Texture2D spriteNo, Vector2 center, OptionsList typeOfOption)
+        {
+			isOptionButton = true;
+			this.spriteYes = spriteYes;
+			this.spriteNo = spriteNo;
+            this.typeOfOption = typeOfOption;
+            Initialize(center);
+
+        }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the collision rectangle for button
+        /// </summary>
+        public Rectangle CollisionRectangle
+        {
+            get { return drawRectangle; }
+        }
+
+        #endregion 
 
 
         #region Public methods
@@ -78,8 +117,19 @@ namespace PlanetParade
             }
 			if (buttonTouchStarted && !screenIsTouched)
             {
-                Game1.ChangeState(clickState);
+				if (!isOptionButton)
+				{
+					Game1.ChangeState(clickState);
+				}
+				else
+				{
+					if (option) {option = false; }
+					else { option = true; }
+                    Game1.ChangeOption(typeOfOption, option);
+				}
+
                 buttonTouchStarted = false;
+
             }
             
         }
@@ -90,8 +140,22 @@ namespace PlanetParade
         /// <param name="spriteBatch">the spritebatch</param>
         public void Draw(SpriteBatch spriteBatch)
         {
-            //spriteBatch.Draw()
-            spriteBatch.Draw(sprite, drawRectangle, sourceRectangle, Color.White);
+			if (!isOptionButton)
+			{
+				spriteBatch.Draw(sprite, drawRectangle, sourceRectangle, Color.DarkGray);
+			}
+			else
+			{
+				if (option)
+				{
+					spriteBatch.Draw(spriteYes, drawRectangle, sourceRectangle, Color.White);
+				}
+				else
+				{
+					spriteBatch.Draw(spriteNo, drawRectangle, sourceRectangle, Color.White);
+				}
+			}
+            
         }
 
         #endregion
@@ -105,15 +169,30 @@ namespace PlanetParade
         private void Initialize(Vector2 center)
         {
             // calculate button width
-            buttonWidth = Game1.Resizing() * sprite.Width;
-            buttonHeight = Game1.Resizing() * sprite.Height;
+			if (!isOptionButton)
+			{
+				buttonWidth = Game1.Resizing() * sprite.Width;
+                buttonHeight = Game1.Resizing() * sprite.Height;
+			}
+			else
+			{
+				buttonWidth = Game1.Resizing() * spriteYes.Width;
+                buttonHeight = Game1.Resizing() * spriteYes.Height;
+			}
            
             // set initial draw and source rectangles
             drawRectangle = new Rectangle(
                 (int)(center.X - buttonWidth / 2),
                 (int)(center.Y - buttonHeight / 2),
                 (int)buttonWidth, (int)buttonHeight);
-            sourceRectangle = new Rectangle(0, 0, sprite.Width, sprite.Height);
+			if (!isOptionButton)
+			{
+				sourceRectangle = new Rectangle(0, 0, sprite.Width, sprite.Height);
+			}
+			else
+			{
+				sourceRectangle = new Rectangle(0, 0, spriteYes.Width, spriteYes.Height);
+			}
         }
 
         #endregion

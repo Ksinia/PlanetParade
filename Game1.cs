@@ -24,9 +24,11 @@ namespace PlanetParade
         Planet[,] userPlanetSequence = new Planet[9, 4];
         List<PlanetType> planetTypeList = new List<PlanetType>();
         List<MenuButton> gameButtons = new List<MenuButton>();
+		List<MenuButton> optionsButtons = new List<MenuButton>();
         List<Planet> winSuns = new List<Planet>();
         MenuButton checkButton;
 		MenuButton yesButton;
+		//MenuButton closeButton;
 		List<Star> stars = new List<Star>();
 
         // planet, button, place sprites
@@ -43,10 +45,16 @@ namespace PlanetParade
         static Texture2D venusSprite;
         static Texture2D checkButtonSprite;
         Texture2D yesButtonSprite;
+        Texture2D playAgainSprite;
+        Texture2D yesNoYesButtonSprite;
+        Texture2D yesNoNoButtonSprite;
         Texture2D giveUpButtonSprite;
 		Texture2D rulesButtonSprite;
 		Texture2D optionsButtonSprite;
-		Texture2D starSprite;
+		Texture2D starSprite1;
+        Texture2D starSprite2;
+        Texture2D starSprite3;
+        //Texture2D closeSprite;
 
         TouchCollection touches;
         bool isTouched = false;
@@ -60,7 +68,9 @@ namespace PlanetParade
 
         // Spacing
         int leftOffset;
-		int rulesOffset;
+		int rulesHorizontalOffset;
+        int rulesVerticalOffset;
+        int rulesWidth;
         //int rightOffset;
         int horizontalPlanetsOffset;
         //int middleOffset;
@@ -80,14 +90,17 @@ namespace PlanetParade
 
         // messages
         SpriteFont messageFont;
+        SpriteFont rulesFont;
         List<GameMessage> planetNames = new List<GameMessage>();
         List<GameMessage> attemptNumbers = new List<GameMessage>();
         List<GameMessage> gameMessages = new List<GameMessage>();
-        Color messageColor = new Color(144, 144, 144);
-		GameMessage rules;
+		List<GameMessage> optionsMessages = new List<GameMessage>();
+        Color messageColor = new Color(169, 169, 169);
+        Color usedAttemptsColor = new Color(100, 100, 100);
+        GameMessage rules;
 		GameMessage winMessage;
 		List<GameMessage> looseMessages = new List<GameMessage>();
-		GameMessage askMessage;
+		//GameMessage askMessage;
 
         Random rand = new Random();
 
@@ -99,7 +112,13 @@ namespace PlanetParade
         // game state tracking
         static GameState currentState = GameState.StartingNewGame;
         int currentAttempt = 0;
-  
+
+		// options support
+		static bool plutoIsPlanet = true;
+		static bool allowDuplicates = true;
+        List<PlanetType> usedPlanets = new List<PlanetType>();
+
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -112,7 +131,9 @@ namespace PlanetParade
 			currentHeight = (int)UIKit.UIScreen.MainScreen.Bounds.Height *2;
 
 			// calculate spacing
-			rulesOffset = currentWidth / 8;
+            rulesHorizontalOffset = currentWidth / 9;
+            rulesVerticalOffset = currentHeight / 20;
+            rulesWidth = currentWidth * 7 / 9;
             leftOffset = currentWidth / 27;
             //rightOffset = currentWidth * 2 / 27;
             horizontalPlanetsOffset = currentWidth / 9;
@@ -169,53 +190,23 @@ namespace PlanetParade
             // load buttons sprites
             checkButtonSprite = Content.Load<Texture2D>(@"graphics\checkbutton2");
             yesButtonSprite = Content.Load<Texture2D>(@"graphics\yesbutton1");
+            playAgainSprite = Content.Load<Texture2D>(@"graphics\playAgain");
+            yesNoYesButtonSprite = Content.Load<Texture2D>(@"graphics\yesNoYes");
+            yesNoNoButtonSprite = Content.Load<Texture2D>(@"graphics\yesNoNo");
+			//closeSprite = Content.Load<Texture2D>(@"graphics\close");
             giveUpButtonSprite = Content.Load<Texture2D>(@"graphics\giveupbutton1");
 			rulesButtonSprite = Content.Load<Texture2D>(@"graphics\rulesbutton1");
 			optionsButtonSprite = Content.Load<Texture2D>(@"graphics\optionsbutton");
 
             //loading star sprite
-			starSprite = Content.Load<Texture2D>(@"graphics\star9x9");
-			// load sprite font
+			starSprite1 = Content.Load<Texture2D>(@"graphics\star18x18");
+            starSprite2 = Content.Load<Texture2D>(@"graphics\star14x14");
+            starSprite3 = Content.Load<Texture2D>(@"graphics\star9x9");
+            // load sprite font
             messageFont = Content.Load<SpriteFont>(@"fonts\Arial");
-            
-            // add initial initialPlanets, planet names 
-            planetTypeList = Enum.GetValues(typeof(PlanetType)).Cast<PlanetType>().ToList();
-            for (int i = 0; i < 5; i++)
-            {
-                initialPlanets.Add(new Planet(planetTypeList[i],
-                    GetPlanetSprite(planetTypeList[i]),
-                    new Vector2(horizontalInitialPlanetsLeftOffset +
-                    i * horizontalInitialPlanetsOffset,
-                    verticalInitialPlanetsOffset1)));
-                planetNames.Add(new GameMessage(initialPlanets[i].Type.ToString(),
-                    messageFont,
-                    new Vector2(horizontalInitialPlanetsLeftOffset +
-                    i * horizontalInitialPlanetsOffset,
-                    verticalInitialPlanetsOffset1 + verticalPlanetNamesOffset), messageColor));
-            }
-            for (int i = 5; i < 9; i++)
-            {
-                initialPlanets.Add(new Planet(planetTypeList[i],
-                    GetPlanetSprite(planetTypeList[i]),
-                    new Vector2(horizontalInitialPlanetsLeftOffset +
-                    (i - 5) * horizontalInitialPlanetsOffset,
-                    verticalInitialPlanetsOffset1 + verticalInitialPlanetsOffset2)));
-                planetNames.Add(new GameMessage(initialPlanets[i].Type.ToString(),
-                    messageFont,
-                    new Vector2(horizontalInitialPlanetsLeftOffset +
-                    (i - 5) * horizontalInitialPlanetsOffset,
-                    verticalInitialPlanetsOffset1 + verticalInitialPlanetsOffset2 +
-                    verticalPlanetNamesOffset), messageColor));
-            }
+            rulesFont = Content.Load<SpriteFont>(@"fonts\ArialRules");
 
-			// add attempt numbers
-			for (int i = 0; i < 9; i++)
-			{
-				attemptNumbers.Add(new GameMessage((i + 1).ToString(),
-					messageFont, new Vector2(leftOffset,
-					verticalFirstAttemptOffset + i * verticalAttemptOffset),
-					messageColor));
-			}
+
 
             // load menu buttons
             gameButtons.Add(new MenuButton(giveUpButtonSprite, new Vector2(
@@ -235,37 +226,49 @@ namespace PlanetParade
                     4 * horizontalInitialPlanetsOffset,
                verticalInitialPlanetsOffset1 + verticalInitialPlanetsOffset2),
                GameState.CheckingUserPlanets);
-			yesButton = new MenuButton(yesButtonSprite, new Vector2(
+			yesButton = new MenuButton(playAgainSprite, new Vector2(
                     horizontalShowingResultsOffset +
                     horizontalPlanetsOffset * 3 / 2,
                     verticalShowingResultsOffset + 4 * verticalAttemptOffset),
                     GameState.StartingNewGame);
-			
-			//loading rules
-			rules = new GameMessage("The world lies in darkness. To make it shine " +
+			//closeButton = new MenuButton(closeSprite, new Vector2(
+                //currentWidth / 2,
+                    //currentHeight * 5 / 6),
+                    //GameState.StartingNewGame);
+
+            // loading option buttons
+            optionsButtons.Add(new MenuButton(yesNoYesButtonSprite, yesNoNoButtonSprite,
+                                              new Vector2(currentWidth / 2, currentHeight * 2 / 6),
+                                              OptionsList.PlutoIsPlanet));
+            optionsButtons.Add(new MenuButton(yesNoYesButtonSprite, yesNoNoButtonSprite,
+                                                new Vector2(currentWidth / 2, currentHeight * 4 / 6),
+                                              OptionsList.AllowDuplicates));
+
+            //loading rules
+            rules = new GameMessage("      The world lies in darkness. To make it shine " +
 			                        "bright you must crack the secret sequence of " +
 			                        "the Planet Parade. The Sun and the Moon will " +
-			                        "guide you. Planets in the secret sequence can " +
-			                        "be duplicated. You need to guess the sequence " +
-			                        "in both planets and order. You are given 9 turns. " +
-			                        "Each guess is made by choosing 4 planets " +
+			                        "guide you. \n      You need to guess the sequence " +
+                                    "in both planets and order. Planets in the secret sequence can " +
+                                    "be duplicated (changable in options). There are 9 turns given. " +
+			                        "\n      Each guess is made by choosing 4 planets " +
 			                        "and touching Check button. You can delete " +
 			                        "chosen planet by touching it before you touch " +
-			                        "Check button. You will get sun for each " +
+			                        "Check button. \n      You will get sun for each " +
 			                        "correct planet that stands in correct " +
 			                        "position. And you will get moon for each " +
 			                        "correct planet that stands in wrong position. " +
-			                        "Good luck!", messageFont,
-			                        new Vector2(currentWidth/2,
-					verticalFirstAttemptOffset), messageColor);
-			rules.Position = new Vector2(rulesOffset, verticalFirstAttemptOffset);
+                                    "\n      Good luck!", rulesFont,
+                                    new Vector2(currentWidth / 2,
+                                                currentHeight / 2), messageColor);
+            rules.Position = new Vector2(rulesHorizontalOffset, rulesVerticalOffset);
 			//load messages
-			askMessage = new GameMessage("Play again?",
-                    messageFont, new Vector2(
-                    horizontalShowingResultsOffset +
-                    horizontalPlanetsOffset * 3 / 2,
-                    verticalShowingResultsOffset+ 3 * verticalAttemptOffset),
-                    messageColor);
+			//askMessage = new GameMessage("Play again?",
+                    //messageFont, new Vector2(
+                    //horizontalShowingResultsOffset +
+                    //horizontalPlanetsOffset * 3 / 2,
+                    //verticalShowingResultsOffset+ 3 * verticalAttemptOffset),
+                    //messageColor);
 			winMessage = new GameMessage("You won!!!",
                     messageFont, new Vector2(horizontalShowingResultsOffset +
                     horizontalPlanetsOffset * 3 / 2,
@@ -281,6 +284,14 @@ namespace PlanetParade
             horizontalPlanetsOffset * 3 / 2,
             verticalShowingResultsOffset + verticalAttemptOffset),
                 messageColor));
+
+			// load options messages
+			optionsMessages.Add(new GameMessage("Is Pluto a planet?",
+												messageFont, new Vector2(currentWidth / 2,
+                                                                          currentHeight * 1 / 6), messageColor));
+			optionsMessages.Add(new GameMessage("Allow duplicated planets?",
+                                                messageFont, new Vector2(currentWidth / 2,
+                                                                          currentHeight * 3 / 6), messageColor));
 			// loading win suns
 			for (int i = 0; i < 4; i++)
             {
@@ -293,9 +304,17 @@ namespace PlanetParade
 			//loading stars
 			for (int i = 0; i < 70; i++)
 			{
-				stars.Add(new Star(starSprite, currentWidth, currentHeight));
+				stars.Add(new Star(starSprite1, starSprite2, starSprite3, currentWidth, currentHeight));
 
 			}
+            // add attempt numbers
+            for (int i = 0; i < 9; i++)
+            {
+                attemptNumbers.Add(new GameMessage((i + 1).ToString(),
+                    messageFont, new Vector2(leftOffset,
+                    verticalFirstAttemptOffset + i * verticalAttemptOffset),
+                    messageColor));
+            }
         }
 
         /// <summary>
@@ -312,10 +331,25 @@ namespace PlanetParade
 			{
 				star.Update(gameTime, currentWidth, currentHeight);
 			}
+
+            // highlighting the attempt number
+            attemptNumbers[currentAttempt].Color = Color.White;
+            for (int i = 0; i < currentAttempt; i++)
+            {
+                attemptNumbers[i].Color = usedAttemptsColor;
+            }
+            for (int i = currentAttempt +1; i < attemptNumbers.Count; i++)
+            {
+                attemptNumbers[i].Color = messageColor;
+            }
+
+           
+
+            //}
             // state-specific processing
 
-			// update buttons
-			if (currentState != GameState.ShowingRules && currentState != GameState.ShowingOptions)
+            // update buttons
+            if (currentState != GameState.ShowingRules && currentState != GameState.ShowingOptions)
             {
                 foreach (MenuButton button in gameButtons)
                 {
@@ -328,7 +362,7 @@ namespace PlanetParade
                 yesButton.Update(touches);
             }
 
-			if (currentState == GameState.ShowingRules || currentState == GameState.ShowingOptions)
+			if (currentState == GameState.ShowingRules)
 			{
 				if (touches.Count == 1 && !isTouched)
 
@@ -346,17 +380,41 @@ namespace PlanetParade
                     buttonTouchStarted = false;
                 }
             }
+            if (currentState == GameState.ShowingOptions)
+            {
+                if (touches.Count == 1 && !isTouched && 
+                    !optionsButtons[0].CollisionRectangle.Contains(touches[0].Position)
+                    && !optionsButtons[1].CollisionRectangle.Contains(touches[0].Position))
 
-            
+                {
+                    isTouched = true;
+                    buttonTouchStarted = true;
+                }
+                if (touches.Count == 0)
+                {
+                    isTouched = false;
+                }
+                if (buttonTouchStarted && isTouched == false)
+                {
+                    currentState = GameState.StartingNewGame;
+                    buttonTouchStarted = false;
+                }
+            }
+
+
+
             if (currentState == GameState.StartingNewGame)
             {
                 // deleting previous game data
+                usedPlanets.Clear();
+                initialPlanets.Clear();
+                planetNames.Clear();
                 secretPlanetSequence.Clear();
                 gameMessages.Clear();
                 resultSequence.Clear();
                 currentAttempt = 0;
                 brightness = 0;
-				//allUserPlanetsList.Clear();
+				
                 for (int i = 0; i < 4; i++)
                 {
                     for (int j = 0; j < 9; j++)
@@ -367,37 +425,88 @@ namespace PlanetParade
                         }
                     }
                 }
+                // add initial initialPlanets, planet names 
+                planetTypeList = Enum.GetValues(typeof(PlanetType)).Cast<PlanetType>().ToList();
+                for (int i = 0; i < 5; i++)
+                {
+                    initialPlanets.Add(new Planet(planetTypeList[i],
+                        GetPlanetSprite(planetTypeList[i]),
+                        new Vector2(horizontalInitialPlanetsLeftOffset +
+                        i * horizontalInitialPlanetsOffset,
+                        verticalInitialPlanetsOffset1)));
+                    planetNames.Add(new GameMessage(initialPlanets[i].Type.ToString(),
+                        messageFont,
+                        new Vector2(horizontalInitialPlanetsLeftOffset +
+                        i * horizontalInitialPlanetsOffset,
+                        verticalInitialPlanetsOffset1 + verticalPlanetNamesOffset), messageColor));
+                }
+                if (plutoIsPlanet)
+                {
+                    for (int i = 5; i < 9; i++)
+                    {
+                        initialPlanets.Add(new Planet(planetTypeList[i],
+                            GetPlanetSprite(planetTypeList[i]),
+                            new Vector2(horizontalInitialPlanetsLeftOffset +
+                            (i - 5) * horizontalInitialPlanetsOffset,
+                            verticalInitialPlanetsOffset1 + verticalInitialPlanetsOffset2)));
+                        planetNames.Add(new GameMessage(initialPlanets[i].Type.ToString(),
+                            messageFont,
+                            new Vector2(horizontalInitialPlanetsLeftOffset +
+                            (i - 5) * horizontalInitialPlanetsOffset,
+                            verticalInitialPlanetsOffset1 + verticalInitialPlanetsOffset2 +
+                            verticalPlanetNamesOffset), messageColor));
+                    }
+
+                }
+                else
+                {
+                    for (int i = 5; i < 8; i++)
+                    {
+                        initialPlanets.Add(new Planet(planetTypeList[i],
+                            GetPlanetSprite(planetTypeList[i]),
+                            new Vector2(horizontalInitialPlanetsLeftOffset +
+                            (i - 5) * horizontalInitialPlanetsOffset,
+                            verticalInitialPlanetsOffset1 + verticalInitialPlanetsOffset2)));
+                        planetNames.Add(new GameMessage(initialPlanets[i].Type.ToString(),
+                            messageFont,
+                            new Vector2(horizontalInitialPlanetsLeftOffset +
+                            (i - 5) * horizontalInitialPlanetsOffset,
+                            verticalInitialPlanetsOffset1 + verticalInitialPlanetsOffset2 +
+                            verticalPlanetNamesOffset), messageColor));
+                    }
+                }
+
+
                 // making a secret planet sequence
+                usedPlanets.Add(PlanetType.Sun);
+                usedPlanets.Add(PlanetType.Moon);
+                if (!plutoIsPlanet)
+                {
+                    usedPlanets.Add(PlanetType.Pluto);
+                }
                 for (int i = 0; i < 4; i++)
                 {
                     secretPlanetSequence.Add(new Planet(rand,
                         new Vector2((horizontalShowingResultsOffset +
                         horizontalPlanetsOffset * i),
-                        (verticalShowingResultsOffset + 2 * verticalAttemptOffset))));
+                                    (verticalShowingResultsOffset + 2 * verticalAttemptOffset)), usedPlanets));
+                    if (!allowDuplicates)
+                    {
+                        usedPlanets.Add(secretPlanetSequence[i].Type);
+                    }
                 }
                 currentState = GameState.AddingUserPlanets;
             }
 
             if (currentState == GameState.AddingUserPlanets)
             {
-                // highlighting the attempt number
-                for (int i = 0; i < attemptNumbers.Count; i++)
-                {
-                    if (i == currentAttempt)
-                    {
-                        attemptNumbers[i].Color = Color.White;
-                    }
-                    else
-                    {
-                        attemptNumbers[i].Color = messageColor;
-                    }
 
-                }
 
-				// add planet of selected type to the list on click
-				foreach (Planet planet in initialPlanets)
+                // add planet of selected type to the list on click
+                foreach (Planet planet in initialPlanets)
 				{
-					if (touches.Count == 1 && !planet.PlanetTouched && planet.CollisionRectangle.Contains(touches[0].Position))
+					
+                    if (touches.Count == 1 && !planet.PlanetTouched && planet.CollisionRectangle.Contains(touches[0].Position))
 					{
 						planet.PlanetSelected = true;
 						planet.PlanetTouched = true;
@@ -574,6 +683,15 @@ namespace PlanetParade
 					brightness = 0;
 				} 
             }
+
+			if (currentState == GameState.ShowingOptions)
+			{
+				foreach (MenuButton button in optionsButtons)
+				{
+					button.Update(touches);
+				}
+				//closeButton.Update(touches);
+			}
              
 
             base.Update(gameTime);
@@ -694,15 +812,27 @@ namespace PlanetParade
 			if (currentState == GameState.ShowingResults)
 			{
 				yesButton.Draw(spriteBatch);
-				askMessage.Draw(spriteBatch);
+				//askMessage.Draw(spriteBatch);
 			}
 			if (currentState == GameState.ShowingRules)
 			{
-				rules.DrawMultiline(spriteBatch, currentWidth * 6 / 8);
+                rules.DrawMultiline(spriteBatch, rulesWidth);
             }
 
 
-
+            // draw options messages and buttons
+			if (currentState == GameState.ShowingOptions)
+			{
+				foreach (GameMessage message in optionsMessages)
+				{
+					message.Draw(spriteBatch);
+				}
+				foreach (MenuButton button in optionsButtons)
+				{
+					button.Draw(spriteBatch);
+				}
+				//closeButton.Draw(spriteBatch);
+			}
             spriteBatch.End();
 
 
@@ -778,6 +908,25 @@ namespace PlanetParade
         {
             currentState = newState;
         }
+
+
+        /// <summary>
+        /// Changes the option
+        /// </summary>
+        /// <param name="option">State of option</param>
+        public static void ChangeOption(OptionsList typeOfOption, bool option)
+        {
+            if (typeOfOption == OptionsList.AllowDuplicates)
+            {
+                allowDuplicates = option;
+            }
+            else if (typeOfOption == OptionsList.PlutoIsPlanet)
+            {
+                plutoIsPlanet = option;
+            }
+        }
+
+
 
         /// <summary>
         /// calculates the resizing coefficient

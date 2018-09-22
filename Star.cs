@@ -24,7 +24,7 @@ namespace PlanetParade
         Rectangle sourceRectangle;
         Vector2 location;
 		Color color1;
-
+        int spriteNumber;
 		bool starActive = true;
 
 		//life support
@@ -33,7 +33,7 @@ namespace PlanetParade
 		int elapsedLifeMilliseconds = 0;
 		int delayMilliseconds;
 		int elapsedDelayMilliseconds = 0;
-        
+
         #endregion
 
         #region Constructors
@@ -45,11 +45,14 @@ namespace PlanetParade
 		/// <param name="sprite">sprite for the star</param>       
         /// <param name="width">width of the screen</param>
 		/// <param name="height">height of the screen</param>
-		public Star(Texture2D sprite, int width, int height)
-        {            
-            
-			this.sprite = sprite;
-			lifeMilliseconds = rand.Next(3000, 6000);
+		public Star(Texture2D sprite1, Texture2D sprite2, Texture2D sprite3, int width, int height)
+        {
+            spriteNumber = rand.Next(6);
+            if (spriteNumber == 0) { this.sprite = sprite1; }
+            if (spriteNumber > 0 && spriteNumber < 3) { this.sprite = sprite2; }
+            else { this.sprite = sprite3;  }
+            if (spriteNumber == 0) { this.sprite = sprite1; }
+            lifeMilliseconds = rand.Next(3000, 6000);
 			delayMilliseconds = rand.Next(0, 6000);
 			location = new Vector2(rand.Next(0, width), rand.Next(0, height));
 			if (rand.Next(0, 1) == 0)
@@ -63,42 +66,7 @@ namespace PlanetParade
 
             
         }
-              
-
-        #endregion
-
-        #region Properties
-       
-                   
-        /// <summary>
-        /// Gets and sets whether a star is active or not
-        /// </summary>
-        public bool StarActive
-        {
-            get { return starActive; }
-			set { starActive = value; }
-        }
-
-		/// <summary>
-		/// Gets and sets life length of a star
-		/// </summary>
-		public int LifeMilliseconds
-        {
-            get { return lifeMilliseconds; }
-            set { lifeMilliseconds = value; }
-        }
-        
-		/// <summary>
-        /// Gets and sets location of a star
-        /// </summary>
-		public Vector2 Location
-        {
-			get { return location; }
-			set { location = value; }
-        }
-
-        
-        #endregion
+        #endregion       
 
         #region Methods
 
@@ -110,25 +78,25 @@ namespace PlanetParade
 		public void Update(GameTime gameTime, int width, int height)
 		{
             
-			if (StarActive)
+			if (starActive)
 			{
 				elapsedDelayMilliseconds = 0;
 				elapsedLifeMilliseconds += gameTime.ElapsedGameTime.Milliseconds;
 				if (elapsedLifeMilliseconds >= lifeMilliseconds)
 				{
-					StarActive = false;
+					starActive = false;
 				}
 			}       
 			if (!starActive)
 			{
 				elapsedLifeMilliseconds = 0;
-                LifeMilliseconds = rand.Next (3000, 6000);
+                lifeMilliseconds = rand.Next (3000, 6000);
 				delayMilliseconds = rand.Next(0, 6000);
-                Location = new Vector2(rand.Next(0, width), rand.Next(0, height));
+                location = new Vector2(rand.Next(0, width), rand.Next(0, height));
 				elapsedDelayMilliseconds += gameTime.ElapsedGameTime.Milliseconds;
 				if (elapsedDelayMilliseconds > delayMilliseconds)
 				{
-					StarActive = true;
+					starActive = true;
 				}
                 
 			}

@@ -17,7 +17,6 @@ namespace PlanetParade
         StartingNewGame,
         ShowingResults,
         ShowingRules,
-        ShowingOptions,
-        //Exiting
+        ShowingOptions
     }
 }
