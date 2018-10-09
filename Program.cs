@@ -1,6 +1,7 @@
 ﻿using System;
 using Foundation;
 using UIKit;
+using AVFoundation;
 
 namespace PlanetParade
 {
@@ -25,6 +26,11 @@ namespace PlanetParade
 
         public override void FinishedLaunching(UIApplication app)
         {
+            AVAudioSession audioSession = AVAudioSession.SharedInstance();
+
+            NSError audioSessionError = new NSError();
+
+            audioSession.SetCategory(new NSString("AVAudioSessionCategoryAmbient"), out audioSessionError);
             RunGame();
         }
     }

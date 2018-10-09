@@ -199,7 +199,7 @@ namespace PlanetParade
 			optionsButtonSprite = Content.Load<Texture2D>(@"graphics\optionsbutton");
 
             //loading star sprite
-			starSprite1 = Content.Load<Texture2D>(@"graphics\star18x18");
+			starSprite1 = Content.Load<Texture2D>(@"graphics\star14x14");
             starSprite2 = Content.Load<Texture2D>(@"graphics\star14x14");
             starSprite3 = Content.Load<Texture2D>(@"graphics\star9x9");
             // load sprite font

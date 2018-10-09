@@ -11,6 +11,11 @@
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
     <AssemblyName>PlanetParade.iOS</AssemblyName>
     <MonoGamePlatform>iOS</MonoGamePlatform>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Authors>Ksenia Gulyaeva</Authors>
+    <NeutralLanguage>en</NeutralLanguage>
+    <Owners>Ksenia Gulyaeva</Owners>
+    <Title>Planet Parade</Title>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
     <DebugSymbols>true</DebugSymbols>
