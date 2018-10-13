@@ -30,7 +30,8 @@
     <MtouchLink>SdkOnly</MtouchLink>
     <MtouchFastDev>true</MtouchFastDev>
     <MtouchDebug>true</MtouchDebug>
-    <CodesignKey>iPhone Developer</CodesignKey>
+    <CodesignKey>iPhone Distribution: Ksenia Gulyaeva (XLM6YPU6H3)</CodesignKey>
+    <CodesignProvision>PlanetParadeStoreProfile</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <DebugType>none</DebugType>
@@ -41,6 +42,8 @@
     <ConsolePause>false</ConsolePause>
     <MtouchArch>i386, x86_64</MtouchArch>
     <MtouchLink>None</MtouchLink>
+    <CodesignProvision>PlanetParadeStoreProfile</CodesignProvision>
+    <CodesignKey>iPhone Distribution: Ksenia Gulyaeva (XLM6YPU6H3)</CodesignKey>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
@@ -55,9 +58,9 @@
     <DeviceSpecificBuild>true</DeviceSpecificBuild>
     <MtouchDebug>true</MtouchDebug>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-    <CodesignKey>iPhone Developer: xiatian@mail.ru (4G5632827Z)</CodesignKey>
+    <CodesignKey>iPhone Distribution: Ksenia Gulyaeva (XLM6YPU6H3)</CodesignKey>
     <AssemblyName>PlanetParade</AssemblyName>
-    <CodesignProvision>iOS Team Provisioning Profile: project.MonoGame.PlanetParade</CodesignProvision>
+    <CodesignProvision>PlanetParadeStoreProfile</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>none</DebugType>
@@ -68,8 +71,9 @@
     <ConsolePause>false</ConsolePause>
     <MtouchArch>ARMv7, ARMv7s, ARM64</MtouchArch>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-    <CodesignKey>iPhone Developer</CodesignKey>
+    <CodesignKey>iPhone Distribution: Ksenia Gulyaeva (XLM6YPU6H3)</CodesignKey>
     <AssemblyName>PlanetParade</AssemblyName>
+    <CodesignProvision>PlanetParadeStoreProfile</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Ad-Hoc|iPhone' ">
     <DebugType>none</DebugType>
@@ -112,7 +116,6 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="GameConstants.cs" />
     <Compile Include="GameMessage.cs" />
     <Compile Include="GameState.cs" />
     <Compile Include="MenuButton.cs" />

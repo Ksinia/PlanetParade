@@ -5,7 +5,7 @@
 	<key>CFBundleDisplayName</key>
 	<string>Planet Parade</string>
 	<key>CFBundleIdentifier</key>
-	<string>project.MonoGame.PlanetParade</string>
+	<string>net.Ksinia.PlanetParade</string>
 	<key>MinimumOSVersion</key>
 	<string>7.0</string>
 	<key>UISupportedInterfaceOrientations</key>
@@ -26,8 +26,8 @@
 	<key>XSLaunchImageAssets</key>
 	<string>Assets.xcassets/LaunchImage.launchimage</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.2</string>
+	<string>1.0.0</string>
 	<key>CFBundleVersion</key>
-	<string>0.1</string>
+	<string>1.0.0</string>
 </dict>
 </plist>

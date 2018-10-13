@@ -4,12 +4,12 @@ using System.Runtime.CompilerServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("PlanetParade")]
-[assembly: AssemblyProduct("PlanetParade")]
+[assembly: AssemblyTitle("Planet Parade")]
+[assembly: AssemblyProduct("Planet Parade")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyCompany("Ksenia Gulyaeva")]
+[assembly: AssemblyCopyright("Copyright © 2018 Ksenia Gulyaeva")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

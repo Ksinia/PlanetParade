@@ -1,7 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-//using Microsoft.Xna.Framework.Input;
-//using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input.Touch;
 using System;
 using System.Collections.Generic;
@@ -27,8 +25,7 @@ namespace PlanetParade
 		List<MenuButton> optionsButtons = new List<MenuButton>();
         List<Planet> winSuns = new List<Planet>();
         MenuButton checkButton;
-		MenuButton yesButton;
-		//MenuButton closeButton;
+		MenuButton yesButton;		
 		List<Star> stars = new List<Star>();
 
         // planet, button, place sprites
@@ -54,7 +51,6 @@ namespace PlanetParade
 		Texture2D starSprite1;
         Texture2D starSprite2;
         Texture2D starSprite3;
-        //Texture2D closeSprite;
 
         TouchCollection touches;
         bool isTouched = false;
@@ -71,9 +67,7 @@ namespace PlanetParade
 		int rulesHorizontalOffset;
         int rulesVerticalOffset;
         int rulesWidth;
-        //int rightOffset;
-        int horizontalPlanetsOffset;
-        //int middleOffset;
+        int horizontalPlanetsOffset;      
         int verticalInitialPlanetsOffset1;
         int verticalInitialPlanetsOffset2;
         int horizontalInitialPlanetsLeftOffset;
@@ -100,8 +94,7 @@ namespace PlanetParade
         GameMessage rules;
 		GameMessage winMessage;
 		List<GameMessage> looseMessages = new List<GameMessage>();
-		//GameMessage askMessage;
-
+		
         Random rand = new Random();
 
         // brightness of backgrounud from 0 to 100, +10 for moon, + 25 for sun
@@ -127,17 +120,15 @@ namespace PlanetParade
 			graphics.SupportedOrientations = DisplayOrientation.Portrait;
 
 			// Setting resolution according to current screen size         
-			currentWidth = (int)UIKit.UIScreen.MainScreen.Bounds.Width *2;
-			currentHeight = (int)UIKit.UIScreen.MainScreen.Bounds.Height *2;
+			currentWidth = (int)UIKit.UIScreen.MainScreen.NativeBounds.Width;
+			currentHeight = (int)UIKit.UIScreen.MainScreen.NativeBounds.Height;
 
 			// calculate spacing
             rulesHorizontalOffset = currentWidth / 9;
             rulesVerticalOffset = currentHeight / 20;
             rulesWidth = currentWidth * 7 / 9;
             leftOffset = currentWidth / 27;
-            //rightOffset = currentWidth * 2 / 27;
-            horizontalPlanetsOffset = currentWidth / 9;
-            //middleOffset = currentWidth * 4 / 27;
+            horizontalPlanetsOffset = currentWidth / 9;           
             verticalInitialPlanetsOffset1 = currentHeight * 3 / 4;
             verticalInitialPlanetsOffset2 = currentHeight * 3 / 20;
             horizontalInitialPlanetsLeftOffset = currentWidth * 4 / 27;
@@ -230,11 +221,7 @@ namespace PlanetParade
                     horizontalShowingResultsOffset +
                     horizontalPlanetsOffset * 3 / 2,
                     verticalShowingResultsOffset + 4 * verticalAttemptOffset),
-                    GameState.StartingNewGame);
-			//closeButton = new MenuButton(closeSprite, new Vector2(
-                //currentWidth / 2,
-                    //currentHeight * 5 / 6),
-                    //GameState.StartingNewGame);
+                    GameState.StartingNewGame);			
 
             // loading option buttons
             optionsButtons.Add(new MenuButton(yesNoYesButtonSprite, yesNoNoButtonSprite,
@@ -246,11 +233,11 @@ namespace PlanetParade
 
             //loading rules
             rules = new GameMessage("      The world lies in darkness. To make it shine " +
-			                        "bright you must crack the secret sequence of " +
+			                        "bright you must break the secret sequence of " +
 			                        "the Planet Parade. The Sun and the Moon will " +
 			                        "guide you. \n      You need to guess the sequence " +
                                     "in both planets and order. Planets in the secret sequence can " +
-                                    "be duplicated (changable in options). There are 9 turns given. " +
+                                    "be duplicated (changeable in options). There are 9 turns given. " +
 			                        "\n      Each guess is made by choosing 4 planets " +
 			                        "and touching Check button. You can delete " +
 			                        "chosen planet by touching it before you touch " +
@@ -262,13 +249,7 @@ namespace PlanetParade
                                     new Vector2(currentWidth / 2,
                                                 currentHeight / 2), messageColor);
             rules.Position = new Vector2(rulesHorizontalOffset, rulesVerticalOffset);
-			//load messages
-			//askMessage = new GameMessage("Play again?",
-                    //messageFont, new Vector2(
-                    //horizontalShowingResultsOffset +
-                    //horizontalPlanetsOffset * 3 / 2,
-                    //verticalShowingResultsOffset+ 3 * verticalAttemptOffset),
-                    //messageColor);
+			//load messages			
 			winMessage = new GameMessage("You won!!!",
                     messageFont, new Vector2(horizontalShowingResultsOffset +
                     horizontalPlanetsOffset * 3 / 2,
@@ -344,8 +325,6 @@ namespace PlanetParade
             }
 
            
-
-            //}
             // state-specific processing
 
             // update buttons
@@ -662,7 +641,7 @@ namespace PlanetParade
 
 
                 if (brightness == 100 ||
-                    currentAttempt == GameConstants.MaxAttempts)
+                    currentAttempt == 8)
                 {
                     currentState = GameState.ShowingResults;
                 }
@@ -689,8 +668,7 @@ namespace PlanetParade
 				foreach (MenuButton button in optionsButtons)
 				{
 					button.Update(touches);
-				}
-				//closeButton.Update(touches);
+				}				
 			}
              
 
@@ -830,8 +808,7 @@ namespace PlanetParade
 				foreach (MenuButton button in optionsButtons)
 				{
 					button.Draw(spriteBatch);
-				}
-				//closeButton.Draw(spriteBatch);
+				}				
 			}
             spriteBatch.End();
 

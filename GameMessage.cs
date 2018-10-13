@@ -42,10 +42,7 @@ namespace PlanetParade
             float textWidth = font.MeasureString(text).X;
             float textHeight = font.MeasureString(text).Y;
 			position = new Vector2(center.X - textWidth / 2,
-                center.Y - textHeight / 2);
-			//зачем это было нужно?
-			//position = new Vector2(center.X - textWidth * 4 * Game1.Resizing() / 2,
-            //    center.Y - textHeight * 4 * Game1.Resizing() / 2);
+                center.Y - textHeight / 2);			
         }
 
         #endregion
@@ -124,8 +121,4 @@ namespace PlanetParade
 		#endregion
         
     }
-
-  
-
-
 }
